@@ -1,6 +1,6 @@
 import express from "express";
-import { AuthControllers } from "../controllers/AuthControllers";
-import { limiter } from "../middleware/rateLimit";
+import { AuthControllers } from "../controllers/AuthControllers.js";
+import { limiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 const auth = new AuthControllers();
