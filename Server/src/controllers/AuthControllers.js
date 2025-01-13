@@ -13,28 +13,28 @@ export class AuthControllers {
       }
 
       const hashedPassword = await bcryptjs.hash(password, 10);
-      const connection = await db.getConnection();
 
-      const [result] = await connection.execute(
-        "INSERT INTO users (email, password, username) VALUES (?, ?, ?)",
-        [email, hashedPassword, username]
+      const result = await db.query(
+          'INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING id',
+          [email, hashedPassword, username]
       );
 
-      connection.release();
-
       const token = jwt.sign(
-        { id: result.insertId, email, username },
-        process.env.JWT_SECRET,
-        { expiresIn: "24h" }
+          { id: result.rows[0].id, email, username },
+          process.env.JWT_SECRET,
+          { expiresIn: "24h" }
       );
 
       res.status(201).json({
         message: "User registered successfully",
         token,
-        user: { id: result.insertId, email, username },
+        user: { id: result.rows[0].id, email, username },
       });
     } catch (error) {
       console.log(error);
+      if (error.code === '23505') { // Unique violation in PostgreSQL
+        return res.status(409).json({ message: "Email already exists" });
+      }
       res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -48,18 +48,16 @@ export class AuthControllers {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      const connection = await db.getConnection();
-      const [users] = await connection.execute(
-        "SELECT * FROM users WHERE email = ?",
-        [email]
+      const result = await db.query(
+          'SELECT * FROM users WHERE email = $1',
+          [email]
       );
-      connection.release();
 
-      if (users.length === 0) {
+      if (result.rows.length === 0) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      const user = users[0];
+      const user = result.rows[0];
       const validPassword = await bcryptjs.compare(password, user.password);
 
       if (!validPassword) {
@@ -67,9 +65,9 @@ export class AuthControllers {
       }
 
       const token = jwt.sign(
-        { id: user.id, email: user.email, username: user.username },
-        process.env.JWT_SECRET,
-        { expiresIn: "24h" }
+          { id: user.id, email: user.email, username: user.username },
+          process.env.JWT_SECRET,
+          { expiresIn: "24h" }
       );
 
       res.status(200).json({

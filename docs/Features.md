@@ -1,6 +1,6 @@
 ### About:
 
-A platform for solo music producers to manage and collaborate on music projects, track their progress, and share ideas with others.
+A platform for music producers to manage and collaborate on music projects, track their progress and a have a library
 
 ### Project Management for Music Tracks
 

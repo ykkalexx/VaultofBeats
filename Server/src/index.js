@@ -21,9 +21,9 @@ const PORT = process.env.PORT || 3000;
 // Test database connection
 async function testConnection() {
   try {
-    const connection = await db.getConnection();
+    const client = await db.connect();
     console.log("Database connected successfully");
-    connection.release();
+    client.release();
   } catch (err) {
     console.error("Unable to connect to database:", err);
   }
