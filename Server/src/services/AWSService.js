@@ -6,17 +6,18 @@ export class AWSService {
     }
 
     // Upload to S3
-    async uploadToS3(file, fileName) {
+    async uploadToS3(file, s3Key) {
         try {
             const params = {
                 Body: file,
                 Bucket: process.env.AWS_BUCKET,
-                Key: fileName,
+                Key: s3Key,
+                ContentType: file.mimetype,
             };
 
             await this.s3.upload(params).promise();
         } catch (error) {
-            console.error(`Failed to upload ${fileName} to S3: ${error}`);
+            console.error(`Failed to upload ${s3Key} to S3: ${error}`);
             throw new Error("Failed to upload to S3: " + error.message);
         }
     }

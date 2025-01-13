@@ -7,10 +7,8 @@ Solo developers initially, but expandable to collaborative roles in the future (
 
 - Create and Manage Projects:
 - Users can create new projects and organize them by track name, genre, and tempo (BPM).
-- Version Control:
-- Allow uploading multiple versions of a track, tagging them (e.g., "Initial Draft," "Mix 1," "Final Master").
-- File Management:
 - Upload and store audio files (e.g., .mp3, .wav), MIDI files, and notes for each project.
+- Version Control: Allow uploading multiple versions of a track, tagging them (e.g., "Initial Draft," "Mix 1," "Final Master").
 
 ### 3. Sample and Preset Library
 
