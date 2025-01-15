@@ -1,5 +1,9 @@
+import Projects from "../components/Projects.jsx";
+
 const Dashboard = () => {
-  return <div>Dashboard</div>;
+  return <div>
+    <Projects />
+  </div>;
 };
 
 export default Dashboard;

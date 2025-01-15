@@ -1,0 +1,9 @@
+bucket/
+users/
+{userId}/
+projects/
+{projectId}/
+v1234567890_abc123/
+file.mp3
+v1234567891_def456/
+file.mp3

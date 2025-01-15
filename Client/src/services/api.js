@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 export async function CreateAccount({ email, password, username }) {
   const response = await fetch(`${API_URL}/api/register`, {
@@ -43,6 +43,26 @@ export async function LoginUser(credentials) {
     };
   } catch (error) {
     console.error("Login error:", error);
+    throw error;
+  }
+}
+
+export async function CreateNewProject({ user_id, name, genre, description, tempo, visibility }) {
+  try {
+    const response = await fetch(`${API_URL}/api/upload-project`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id,name, genre, description, tempo, visibility }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to create project");
+    }
+  } catch (error) {
+    console.error("Creating new project error :", error);
     throw error;
   }
 }
