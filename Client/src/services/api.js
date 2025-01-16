@@ -97,3 +97,17 @@ export async function FetchSingleUserProject(user_id, project_id) {
 
   return response.json();
 }
+
+export async function UpdateUserProject( user_id, project_id, name, genre, description, tempo, visibility ){
+  const response = await fetch(`${API_URL}/api/update-project/${user_id}/${project_id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ user_id, name, genre, description, tempo, visibility }),
+  })
+
+  if (!response.ok) {
+    throw new Error("Failed to update project");
+  }
+}

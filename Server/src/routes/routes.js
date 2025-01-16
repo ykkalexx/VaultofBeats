@@ -15,5 +15,6 @@ router.post("/upload-project", pm.createNewProject);
 router.post("/upload-file/:projectId", pm.uploadFileToProject);
 router.get("/fetch-projects/:user_id", pm.getAllProjects);
 router.get("/fetch-project/:user_id/:project_id", pm.getSingleProject);
+router.put("/update-project/:user_id/:project_id", pm.updateProject);
 
 export default router;
