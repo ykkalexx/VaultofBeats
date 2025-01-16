@@ -3,7 +3,8 @@ import { jwtDecode } from "jwt-decode";
 import {FolderPlus,X} from "@phosphor-icons/react";
 import Input from "../components/Input";
 import Button from "./Button.jsx";
-import {CreateNewProject} from "../services/api.js";
+import {CreateNewProject, FetchUserProjects} from "../services/api.js";
+import SongModal from "./SongModal.jsx";
 
 const Projects = () => {
     const [userData, setUserDate] = useState(null);
@@ -13,6 +14,9 @@ const Projects = () => {
     const [description, setDescription] = useState("");
     const [tempo, setTempo] = useState(0);
     const [visibility, setVisibility] = useState(false);
+    const [projects, setProjects] = useState([]);
+    const [selectedProject, setSelectedProject] = useState(null);
+    const [songModal, setSongModal] = useState(false);
 
     // fetching the user information from token
     useEffect(() => {
@@ -27,6 +31,25 @@ const Projects = () => {
         }
     }, []);
 
+    // fetching user projects
+    useEffect(() => {
+        const user_id = userData?.id;
+        const fetchProjects = async () => {
+            if (!user_id) return;
+            try {
+                console.log("use effect", user_id);
+                const response = await FetchUserProjects(user_id);
+                setProjects(response.projects); // Access the projects array from the response
+            } catch (error) {
+                console.error("Error fetching projects:", error);
+            }
+        };
+
+        fetchProjects();
+    }, [userData?.id]);
+
+    console.log("projects: ", projects);
+
     if (!userData) {
         return <div>Something went wrong!</div>
     }
@@ -39,7 +62,7 @@ const Projects = () => {
         e.preventDefault();
         try {
             await CreateNewProject({
-                user_id: userData.user_id,
+                user_id: userData.id,
                 name: name,
                 genre: genre,
                 description: description,
@@ -50,6 +73,16 @@ const Projects = () => {
             console.error(error);
         }
     }
+
+    const handleProjectClick = (project) => {
+        setSelectedProject(project);
+        setSongModal(true);
+    };
+
+    const closeSongModal = () => {
+        setSongModal(false);
+        setSelectedProject(null);
+    };
 
     return(
     <div className="flex flex-col items-start p-6">
@@ -113,16 +146,32 @@ const Projects = () => {
         )}
 
         {/* Project Cards */}
-        <div className="mt-10 grid grid-cols-6 gap-5">
-            <div className="p-6 text-sm cursor-pointer font-light border-[0.5px] w-[400px] rounded-xl">
-                <h1>Project Name</h1>
-                <p className="mt-5">Project Description</p>
-                <div className="flex mt-4 flex-row items-center w-full justify-between">
-                    <p>Tempo: 122 BPM</p>
-                    <p className="p-2 border-[1px] rounded-xl">Public</p>
+        {Array.isArray(projects) && projects.map((item, index) => (
+            <div key={index} className="mt-10 grid grid-cols-6 gap-5">
+                <div
+                    onClick={() => handleProjectClick(item)}
+                    className="p-6 text-sm cursor-pointer font-light border-[0.5px] w-[400px] rounded-xl hover:bg-gray-50"
+                >
+                    <h1>{item.name}</h1>
+                    <p className="mt-5">{item.description}</p>
+                    <div className="flex mt-4 flex-row items-center w-full justify-between">
+                        <p>Tempo: {item.tempo} BPM</p>
+                        <p className="p-2 border-[1px] rounded-xl">
+                            {item.visibility ? 'Public' : 'Private'}
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
+        ))}
+
+        {/* Song Modal */}
+        {songModal && selectedProject && (
+            <SongModal
+                project={selectedProject}
+                user_id={userData.id}
+                onClose={closeSongModal}
+            />
+        )}
 
     </div>
     );
